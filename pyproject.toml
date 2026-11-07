@@ -1,0 +1,28 @@
+[project]
+name = "kaggle-house"
+version = "0.1.0"
+requires-python = ">=3.14"
+dependencies = [
+    "fg-data-profiling>=4.20.0",
+    "hydra-core>=1.3.0",
+    "ipykernel>=7.4.0",
+    "ipylab>=1.0.0",
+    "ipywidgets>=8.1.9",
+    "kaggle>=2.2.5",
+    "marimo>=0.25.2",
+    "matplotlib>=3.11.2",
+    "numpy>=2.5.4",
+    "omegaconf>=2.4.0",
+    "optuna>=5.0.0",
+    "polars>=2.1.0",
+    "pyarrow>=26.0.1",
+    "pygwalker>=0.5.0.1",
+    "runcell>=0.2.9",
+    "scikit-learn>=1.9.1",
+    "seaborn>=0.13.2",
+    "skimpy>=0.0.22",
+    "sweetviz>=2.3.3",
+    "torch>=2.15.0",
+    "torchvision>=0.29.2",
+    "tqdm>=4.70.1",
+]

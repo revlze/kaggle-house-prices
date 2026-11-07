@@ -1,0 +1,6 @@
+data/
+artefacts/
+uv.lock
+__*__
+.venv
+.*cache
