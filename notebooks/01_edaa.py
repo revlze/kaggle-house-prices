@@ -18,22 +18,20 @@ def _():
 
     from pathlib import Path
 
-    return Path, ProfileReport, mo, plt, skim, sv
+    from src.data import load_data
+
+    return Path, ProfileReport, load_data, mo, plt, skim, sv
 
 
 @app.cell
 def _(Path):
-    import sys
 
     base_path = Path("/Users/platon/Documents/kaggle-house")
-    sys.path.insert(0, str(base_path / "src"))
-
-    from data import load_data
 
     curr_path = Path(__file__).parent
     html_path = curr_path/'htmls'
     html_path.mkdir(exist_ok=True)
-    return base_path, html_path, load_data
+    return base_path, html_path
 
 
 @app.cell
@@ -126,6 +124,34 @@ def _(mo):
     - фича MiscFeature - там 96% NA, как будто просто удалить
     - фича MiscVal — там 96.4% нулей, как будто делит
     - фича YrSold — чуть бесполезная фича вроде, там везде одна цена по сути 181к +- 4к, можно делит?
+    """)
+    return
+
+
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(r"""
+    чат жпт:
+
+
+    | Признак | Моя оценка | Что делать |
+    |---|---|---|
+    | `Alley` | 94% NaN означают отсутствие доступа к переулку, а не неизвестное значение | Оставить, заполнить `NoAlley` |
+    | `Street` | Всего 6 домов с гравийной дорогой | Кандидат на удаление |
+    | `Utilities` | Только 1 дом отличается от остальных | Проверить удаление через CV |
+    | `LandSlope` | 95% `Gtl`, но остальные 78 домов имеют иной уклон. Связь с `LotArea` — 0.55 | Оставить |
+    | `Condition2` | Только 15 домов имеют значение, отличное от `Norm` | Кандидат на удаление |
+    | `RoofMatl` | 98% `CompShg`, связь с ценой 0.18 | Оставить для проверки, возможно объединить редкие категории |
+    | `BsmtFinSF2` | 89% нулей, остальные значения — площадь второй отделанной части подвала | Оставить числовым |
+    | `BsmtHalfBath` | 94% нулей, количество дополнительных полуванных в подвале | Оставить, проверить объединение с другими ванными |
+    | `FireplaceQu` | 47% NaN соответствуют домам без камина | Оставить, заполнить `NoFireplace` |
+    | `EnclosedPorch`, `3SsnPorch`, `ScreenPorch` | Разные типы веранд, с большой долей нулей | Оставить, добавить агрегированные признаки |
+    | `PoolArea` | Бассейн есть только у 7 домов | Проверить бинарный `HasPool` вместо площади |
+    | `PoolQC` | Пропуски означают отсутствие бассейна | Заполнить `NoPool`, проверить полезность |
+    | `Fence` | 81% NaN означают отсутствие забора | Оставить, заполнить `NoFence` |
+    | `MiscFeature` | 96% NaN означают отсутствие дополнительных объектов | Кандидат на удаление |
+    | `MiscVal` | 96.4% нулей, слабая линейная связь с ценой −0.02 | Кандидат на удаление, проверить вместе с `MiscFeature` |
+    | `YrSold` | Средние цены по годам близки, но это не исключает временного эффекта | Пока оставить |
     """)
     return
 
