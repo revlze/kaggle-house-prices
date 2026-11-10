@@ -2,10 +2,8 @@ import polars as pl
 from pathlib import Path
 from sklearn.model_selection import train_test_split
 
-from pathlib import Path
-
-from utils import resolve_path
-from features import make_features
+from .utils import resolve_path
+from .features import make_features
 
 
 NA_ABSENCE_COLUMNS = (
@@ -27,24 +25,26 @@ NA_ABSENCE_COLUMNS = (
 
 
 class Dataset:
-    def __init__(self, train_path, test_path, feature_set, seed, train_size=0.8):
+    def __init__(self, train_path, feature_set, seed, train_size=0.8, drop=()):
         self.train_path = resolve_path(train_path)
-        self.test_path = resolve_path(test_path)
 
         self.train_dataset = load_data(self.train_path)
         self.feature_set = feature_set
         self.seed = seed
         self.train_size = train_size
+        self.drop = tuple(drop)
         self.X, self.numeric_columns, self.categorical_columns = make_features(
-            self.train_dataset, self.feature_set
+            self.train_dataset, self.feature_set, self.drop
         )
-        self.y = self.train_dataset["SalePrice"]
 
-        self.X_train, self.X_holdout, self.y_trian, self.y_holdout = train_test_split(
+        # TODO: y хранится в log1p шкале,
+        # нужно для сабмита добавить экспоненту для перевода обратно в доллары
+        self.y = self.train_dataset["SalePrice"].log1p()
+
+        self.X_train, self.X_holdout, self.y_train, self.y_holdout = train_test_split(
             self.X,
             self.y,
             train_size=self.train_size,
-            stratify=self.y,
             random_state=seed,
         )
 
