@@ -1,4 +1,5 @@
 categorical = [
+    "MSSubClass", # категориальный, потому что показывает типы из @data_description.txt прочитал
     "MSZoning",
     "Street",
     "Alley",
@@ -45,7 +46,6 @@ categorical = [
 ]
 
 numeric = [
-    "MSSubClass",
     "LotFrontage",
     "LotArea",
     "OverallQual",
@@ -83,11 +83,24 @@ numeric = [
     "YrSold",
 ]
 
-variants = {"base": []}
+LOW_INFO = ("Street", "Utilities", "Condition2", "MiscFeature", "MiscVal")
+
+variants = {
+    "base": {"extra": [], "drop": []},
+    "pruned": {"extra": [], "drop": LOW_INFO},
+}
 
 
-def make_features(df, feature_set):
-    extra = variants["feature_set"]
+def make_features(df, feature_set, drop=()):
+    variant = variants[feature_set]
+    drop = set(variant["drop"]) | set(drop)
+    unknown = drop - set(numeric) - set(categorical)
+    if unknown:
+        raise ValueError(f"Unknown features to drop: {sorted(unknown)}")
+
+    extra = variant["extra"]
     # TODO: extend numeric and categorical with extra FE
 
-    return df.select(numeric + categorical), numeric, categorical
+    num = [c for c in numeric if c not in drop]
+    cat = [c for c in categorical if c not in drop]
+    return df.select(num + cat), num, cat
