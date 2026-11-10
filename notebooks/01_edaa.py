@@ -20,7 +20,7 @@ def _():
 
     from src.data import load_data
 
-    return Path, ProfileReport, load_data, mo, plt, skim, sv
+    return Path, ProfileReport, load_data, mo, pl, plt, skim, sv
 
 
 @app.cell
@@ -153,6 +153,18 @@ def _(mo):
     | `MiscVal` | 96.4% нулей, слабая линейная связь с ценой −0.02 | Кандидат на удаление, проверить вместе с `MiscFeature` |
     | `YrSold` | Средние цены по годам близки, но это не исключает временного эффекта | Пока оставить |
     """)
+    return
+
+
+@app.cell
+def _(pl, train_dataset):
+    train_dataset.filter(pl.col("GrLivArea") >= 3000).select("GrLivArea", "SalePrice").sort('GrLivArea')
+    return
+
+
+@app.cell
+def _(pl, test_dataset):
+    test_dataset.filter(pl.col("GrLivArea") > 4000)
     return
 
 

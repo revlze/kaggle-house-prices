@@ -1,5 +1,15 @@
 ### To-do
-- EDA: skimpy — first pass; fg-data-profiling — second pass; sweetviz — third pass; use my hands — fourth pass
+- [x] EDA: skimpy — first pass; fg-data-profiling — second pass; sweetviz — third pass; use my hands — fourth pass
+- [x] log1p для SalePrice — дало буст на CV на всех моделях
+- [x] порядковые в numeric — варианты `pruned_ordinal` / `pruned_ordinal_no_cond`. CatBoost: −0.00057 (4/5 фолдов), в пределах шума; без `*Cond` эффекта нет. Linear: не определить, шум модели больше эффекта. Оставляю `pruned_ordinal` базой ради простоты
+- [ ] `TotalSF = TotalBsmtSF + GrLivArea` — приоритет
+- [ ] `TotalBath` (Full + 0.5·Half, включая подвал) и `TotalPorchSF` — одним вариантом, ожидаемо около шума
+- [ ] возрасты `HouseAge`, `RemodAge`, `IsRemodeled` — низкий приоритет для бустинга, пригодится для линейной
+- [ ] нативные `cat_features` в CatBoost вместо one-hot для неупорядоченных категорий
+- [ ] Ridge/Lasso вместо LinearRegression + выбросы `GrLivArea > 4000` — linear сейчас шумит (std ~0.03, фолд с 0.188)
+- [ ] бленд CatBoost + Ridge/Lasso — нужны out-of-fold предсказания
+- [ ] каждый шаг — отдельный вариант в `variants`, сравнивать пофолдовые лоссы с предыдущим шагом
+- [ ] лишний `model.fit(X, y)` в `fit_single_sklearn_model` (`import marimo as mo` уже добавлен)
 
 
 ### Notes
@@ -23,6 +33,8 @@
 - фича YrSold — чуть бесполезная фича вроде, там везде одна цена по сути 181к +- 4к, можно делит?
 
 - еще короч важно переводить sales prices в log1p, типо, например, потому что метрика в катбусте только rmse, а нам надо уменьшать rmsle 
+
+- еще короче нашел, что GrLivArea есть выбросы в данных, которые чуть мешают модели, там короче есть нетипичные сделки. короче можно наверно рубтть от 4000 потому что там есть какие-то : 5642	160000, 4676	184750, 3395	200000, в тоже время 4476	745000, 4316	755000, 3608	475000, короче страненько, эт ес че было "GrLivArea", "SalePrice"
 
 
 ### Questions
