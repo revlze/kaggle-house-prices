@@ -7,3 +7,4 @@ __*__
 *.egg-info
 catboost_info
 CLAUDE.md
+.DS_Store
