@@ -1,0 +1,26 @@
+name: mlp
+scale: true
+regressor:
+  _target_: sklearn.compose.TransformedTargetRegressor
+  transformer:
+    _target_: sklearn.preprocessing.StandardScaler
+  regressor:
+    _target_: src.models.mlp.MLPRegressor
+    hidden_sizes: [128, 64]
+    dropout: 0.1
+    epoches: 100
+    batch_size: 64
+    seed: ${seed}
+    validation_fraction: 0.15
+    refit_full: true
+    optimizer:
+      _target_: torch.optim.AdamW
+      _partial_: true
+      lr: 0.001
+      weight_decay: 0.0001
+    scheduler:
+      _target_: torch.optim.lr_scheduler.CosineAnnealingLR
+      _partial_: true
+      T_max: ${model.regressor.regressor.epoches}
+    loss_fn:
+      _target_: torch.nn.MSELoss
