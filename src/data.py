@@ -68,4 +68,6 @@ def load_data(path):
 def save_submission(submission: pl.DataFrame, name: str):
     path = resolve_path('submissions')
     path.mkdir(exist_ok=True)
-    submission.write_csv(file=path / f'submission_{name}.csv')
+    path_csv = path / f'submission_{name}.csv'
+    submission.write_csv(file=path_csv)
+    return path_csv

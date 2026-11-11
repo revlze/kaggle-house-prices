@@ -1,0 +1,16 @@
+defaults:
+  - model: catboost
+  - cv: kfold
+  - _self_
+
+seed: 1027309
+feature_set: pruned_ordinal
+train_path: data/train.csv
+test_path: data/test.csv
+submit: false
+
+hydra:
+  run:
+    dir: artefacts/hydra/${now:%Y-%m-%d}/${now:%H-%M-%S}
+  sweep:
+    dir: artefacts/hydra/multirun/${now:%Y-%m-%d}/${now:%H-%M-%S}

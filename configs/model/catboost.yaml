@@ -1,0 +1,6 @@
+name: catboost
+scale: false
+regressor:
+  _target_: catboost.CatBoostRegressor
+  silent: true
+  random_seed: ${seed}
