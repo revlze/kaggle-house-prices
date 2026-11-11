@@ -1,0 +1,4 @@
+_target_: src.cv.StratifiedRegressionKFold
+n_splits: 5
+shuffle: true
+random_state: ${seed}

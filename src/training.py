@@ -26,7 +26,7 @@ class Training:
             'avg_loss': None
         }
         X, y = self.dataset.X, self.dataset.y
-        split_loop = tqdm(self.cv.split(X), total=self.cv.get_n_splits(), desc='CV')
+        split_loop = tqdm(self.cv.split(X, y), total=self.cv.get_n_splits(), desc='CV')
         cv_loss = 0
         for i, (train_idx, val_idx) in enumerate(split_loop, start=1):
             fold_model = clone(model)
