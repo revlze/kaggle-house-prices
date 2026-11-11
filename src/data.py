@@ -48,6 +48,13 @@ class Dataset:
             random_state=seed,
         )
 
+    def load_test(self, test_path):
+        test_path = resolve_path(test_path)
+        test_dataset = load_data(test_path)
+        X_test, _, _ = make_features(test_dataset, self.feature_set, self.drop)
+        return test_dataset.select("Id"), X_test
+
+    
 
 def load_data(path):
     """Keep NA as an absence category where specified by the data dictionary."""
@@ -56,3 +63,9 @@ def load_data(path):
         column: "NA" for column in columns if column not in NA_ABSENCE_COLUMNS
     }
     return pl.read_csv(path, null_values=null_values)
+
+
+def save_submission(submission: pl.DataFrame, name: str):
+    path = resolve_path('submissions')
+    path.mkdir(exist_ok=True)
+    submission.write_csv(file=path / f'submission_{name}.csv')
