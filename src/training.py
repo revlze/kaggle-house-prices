@@ -17,7 +17,7 @@ class Training:
         self.fitted_model = None
 
 
-    def fit_single_sklearn_model(self):
+    def fit_single_sklearn_model(self, refit=False):
         set_seed(self.seed)
         model = clone(self.model)
 
@@ -39,12 +39,13 @@ class Training:
             results['cv_loss'].append(fold_rmse)
         cv_loss /= self.cv.get_n_splits()
         results['avg_loss'] = cv_loss
-        self.fitted_model = model.fit(X, y)
+        if refit:
+            self.fitted_model = model.fit(X, y)
         return results
 
     def get_predicts(self, test_path, model_path=None,):
         if self.fitted_model is None and model_path is None:
-            raise NotFittedError("No trained model: call fit_single_sklearn_model() first or pass model_path")
+            raise NotFittedError("No trained model: call fit_single_sklearn_model(refit=True) first or pass model_path")
         if model_path is not None:
             model_path = resolve_path(model_path)
             model = load(model_path)
