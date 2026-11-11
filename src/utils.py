@@ -3,8 +3,10 @@ import random
 
 import numpy as np
 import torch
+import polars as pl
 
 from pathlib import Path
+
 
 def set_seed(seed=42):
     """Seed Python, NumPy and PyTorch and request deterministic torch operations.
