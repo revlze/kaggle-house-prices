@@ -6,10 +6,11 @@
 - [ ] `TotalBath` (Full + 0.5·Half, включая подвал) и `TotalPorchSF` — одним вариантом, ожидаемо около шума
 - [ ] возрасты `HouseAge`, `RemodAge`, `IsRemodeled` — низкий приоритет для бустинга, пригодится для линейной
 - [ ] нативные `cat_features` в CatBoost вместо one-hot для неупорядоченных категорий
-- [ ] Ridge/Lasso вместо LinearRegression + выбросы `GrLivArea > 4000` — linear сейчас шумит (std ~0.03, фолд с 0.188)
+- [x] выбросы: `remove_outliers` в `src/data.py` удаляет из train 2 дома с `GrLivArea > 4000` и `SalePrice < 300k` (1458 строк). Дома >4000 за 745k и 755k оставлены. Test не трогается. Фолд с 0.17–0.19 исчез у всех моделей, ridge 0.1406 → 0.1127, catboost 0.1179 → 0.1113. CV до/после не сравнимы (другие данные), CV стал чуть оптимистичнее LB
+- [ ] Lasso / ElasticNet рядом с Ridge
 - [ ] бленд CatBoost + Ridge/Lasso — нужны out-of-fold предсказания
 - [ ] каждый шаг — отдельный вариант в `variants`, сравнивать пофолдовые лоссы с предыдущим шагом
-- [ ] лишний `model.fit(X, y)` в `fit_single_sklearn_model` (`import marimo as mo` уже добавлен)
+- [ ] лишний `model.fit(X, y)` в `fit_single_sklearn_model`
 
 
 ### Notes
@@ -44,7 +45,10 @@
 
 | Approach | CV  | CV STD | LB  | Date |
 | -------- | --- | ------ | --- | ---- |
-|          |     |        |     |      |
+| linear, pruned_ordinal, без выбросов, KFold(5) | 0.12177 | 0.01403 |  | 2026-11-11 |
+| ridge (alpha=10, scaled), pruned_ordinal, без выбросов, KFold(5) | 0.11265 | 0.01097 |  | 2026-11-11 |
+| catboost (default), pruned_ordinal, без выбросов, KFold(5) | 0.11131 | 0.00914 |  | 2026-11-11 |
+| mlp (128-64, AdamW, cosine, 100 ep + refit), pruned_ordinal, без выбросов, KFold(5) | 0.12131 | 0.01083 |  | 2026-11-11 |
 
 ### Annotations
 
@@ -60,7 +64,8 @@
 
 ### Processed ideas
 #### Good
-- pass
+- log1p для SalePrice — буст на CV на всех моделях
+- удаление 2 выбросов (`GrLivArea > 4000`, `SalePrice < 300k`) — убрало фолд-выброс у всех моделей, сильнее всего помогло linear/ridge/mlp
 #### Neutral
 - pass
 #### Bad
