@@ -1,13 +1,14 @@
 defaults:
   - model: catboost
-  - cv: kfold
+  - cv: stratified
   - _self_
 
-seed: 1027309
+name_exp: v1
+seed: 0xFACED
 feature_set: pruned_ordinal
 train_path: data/train.csv
 test_path: data/test.csv
-submit: false
+submit: true
 
 hydra:
   run:
