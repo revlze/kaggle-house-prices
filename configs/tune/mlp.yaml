@@ -1,0 +1,8 @@
+# uv run python run.py model=mlp +tune=mlp
+# params: paths relative to model.regressor (MLP sits inside TransformedTargetRegressor)
+n_trials: 20
+params:
+  regressor.dropout: {type: float, low: 0.0, high: 0.5}
+  regressor.batch_size: {type: categorical, choices: [32, 64, 128]}
+  regressor.optimizer.lr: {type: float, low: 0.0001, high: 0.01, log: true}
+  regressor.optimizer.weight_decay: {type: float, low: 0.000001, high: 0.01, log: true}

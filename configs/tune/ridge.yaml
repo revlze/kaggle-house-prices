@@ -1,0 +1,5 @@
+# uv run python run.py model=ridge +tune=ridge
+# params: paths relative to model.regressor
+n_trials: 50
+params:
+  alpha: {type: float, low: 0.1, high: 100, log: true}
