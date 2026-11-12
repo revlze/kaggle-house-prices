@@ -11,7 +11,12 @@ test_path: data/test.csv
 submit: true
 
 hydra:
+  job:
+    env_set:
+      # torch and xgboost each bundle libomp; with both loaded, multithreaded
+      # OpenMP segfaults on macOS. One OpenMP thread avoids the crash.
+      OMP_NUM_THREADS: "1"
   run:
-    dir: artefacts/hydra/${now:%Y-%m-%d}/${now:%H-%M-%S}
+    dir: artefacts/hydra/${name_exp}/${now:%Y-%m-%d_%H-%M-%S}
   sweep:
-    dir: artefacts/hydra/multirun/${now:%Y-%m-%d}/${now:%H-%M-%S}
+    dir: artefacts/hydra/multirun/${name_exp}/${now:%Y-%m-%d_%H-%M-%S}
