@@ -18,7 +18,7 @@ def set_seed(seed=42):
     random.seed(seed)
     np.random.seed(seed)
     torch.manual_seed(seed)
-    os.environ['PYTHONHASHSEED'] = str(seed)
+    os.environ["PYTHONHASHSEED"] = str(seed)
     torch.use_deterministic_algorithms(True, warn_only=True)
 
     if torch.cuda.is_available():
@@ -26,7 +26,8 @@ def set_seed(seed=42):
         torch.backends.cudnn.deterministic = True
         torch.backends.cudnn.benchmark = False
 
-    print(f'Setted seed to {seed}')
+    print(f"Setted seed to {seed}")
+
 
 def resolve_path(path):
     path = Path(path)

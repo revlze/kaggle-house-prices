@@ -1,7 +1,7 @@
 import polars as pl
 
 categorical = [
-    "MSSubClass", # категориальный, потому что показывает типы из @data_description.txt прочитал
+    "MSSubClass",  # категориальный, потому что показывает типы из @data_description.txt прочитал
     "MSZoning",
     "Street",
     "Alley",
@@ -96,13 +96,26 @@ ORDINAL_SCALES = {
     "garage_finish": {"NA": 0, "Unf": 1, "RFn": 2, "Fin": 3},
     "paved": {"N": 0, "P": 1, "Y": 2},
     "functional": {
-        "Sal": 0, "Sev": 1, "Maj2": 2, "Maj1": 3, "Mod": 4, "Min2": 5, "Min1": 6, "Typ": 7,
+        "Sal": 0,
+        "Sev": 1,
+        "Maj2": 2,
+        "Maj1": 3,
+        "Mod": 4,
+        "Min2": 5,
+        "Min1": 6,
+        "Typ": 7,
     },
     "yes_no": {"N": 0, "Y": 1},
 }
 
 ORDINAL_QUALITY = (
-    "ExterQual", "KitchenQual", "HeatingQC", "BsmtQual", "FireplaceQu", "GarageQual", "PoolQC",
+    "ExterQual",
+    "KitchenQual",
+    "HeatingQC",
+    "BsmtQual",
+    "FireplaceQu",
+    "GarageQual",
+    "PoolQC",
 )
 # По цене немонотонны (TA дороже Gd/Ex) — для линейной модели проверяем отдельно.
 ORDINAL_COND = ("ExterCond", "BsmtCond", "GarageCond")
@@ -125,7 +138,11 @@ variants = {
     "base": {"extra": [], "drop": [], "ordinal": ()},
     "pruned": {"extra": [], "drop": LOW_INFO, "ordinal": ()},
     "pruned_ordinal": {"extra": [], "drop": LOW_INFO, "ordinal": ORDINAL_ALL},
-    "pruned_ordinal_no_cond": {"extra": [], "drop": LOW_INFO, "ordinal": ORDINAL_NO_COND},
+    "pruned_ordinal_no_cond": {
+        "extra": [],
+        "drop": LOW_INFO,
+        "ordinal": ORDINAL_NO_COND,
+    },
 }
 
 
@@ -141,11 +158,15 @@ def make_features(df, feature_set, drop=()):
     ordinal = [c for c in variant.get("ordinal", ()) if c not in drop]
     not_categorical = set(ordinal) - set(categorical)
     if not_categorical:
-        raise ValueError(f"Ordinal columns must be categorical: {sorted(not_categorical)}")
+        raise ValueError(
+            f"Ordinal columns must be categorical: {sorted(not_categorical)}"
+        )
 
     # replace_strict падает на значении вне шкалы — опечатка в mapping не пройдёт молча.
     df = df.with_columns(
-        pl.col(c).replace_strict(ORDINAL_SCALES[ORDINAL_COLUMNS[c]], return_dtype=pl.Int64)
+        pl.col(c).replace_strict(
+            ORDINAL_SCALES[ORDINAL_COLUMNS[c]], return_dtype=pl.Int64
+        )
         for c in ordinal
     )
 

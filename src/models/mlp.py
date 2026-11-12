@@ -38,10 +38,19 @@ class MLPRegressor(RegressorMixin, BaseEstimator):
     the best epoch. With refit_full=True a fresh network is then trained on all rows
     for that many epochs, replaying the recorded learning rates.
     """
+
     def __init__(
-        self, hidden_sizes=(512, 256), dropout=0.0, epoches=20, batch_size=64, seed=0,
-        optimizer=None, scheduler=None, loss_fn=None,
-        validation_fraction=0.15, refit_full=True,
+        self,
+        hidden_sizes=(512, 256),
+        dropout=0.0,
+        epoches=20,
+        batch_size=64,
+        seed=0,
+        optimizer=None,
+        scheduler=None,
+        loss_fn=None,
+        validation_fraction=0.15,
+        refit_full=True,
     ):
         """optimizer and scheduler are factories (Hydra `_partial_: true`):
         optimizer(params) -> torch optimizer, scheduler(optimizer) -> lr scheduler.
@@ -86,13 +95,15 @@ class MLPRegressor(RegressorMixin, BaseEstimator):
         set_seed(self.seed)
         X = self._to_tensor(X)
         y = torch.as_tensor(np.asarray(y, dtype=np.float32)).unsqueeze(1)
-        
+
         make_optimizer = self.optimizer or partial(torch.optim.AdamW, lr=1e-3)
         loss_fn = self.loss_fn or nn.MSELoss()
         dataset = TensorDataset(X, y)
 
         # stage 1: train on part of the rows, validate on the rest
-        trainset, valset = random_split(dataset, (1 - self.validation_fraction, self.validation_fraction))
+        trainset, valset = random_split(
+            dataset, (1 - self.validation_fraction, self.validation_fraction)
+        )
         X_val, y_val = X[valset.indices], y[valset.indices]
 
         train_loader = self._make_loader(trainset)
@@ -102,12 +113,14 @@ class MLPRegressor(RegressorMixin, BaseEstimator):
         scheduler = self.scheduler(optimizer) if self.scheduler is not None else None
 
         lr_history, val_history = [], []
-        epoch_loop = tqdm(range(self.epoches), desc='epoches', leave=False)
+        epoch_loop = tqdm(range(self.epoches), desc="epoches", leave=False)
         for epoch in epoch_loop:
-            lr_history.append(optimizer.param_groups[0]['lr'])
+            lr_history.append(optimizer.param_groups[0]["lr"])
 
             # train
-            epoch_loss = self._train_epoch(self.model_, train_loader, optimizer, loss_fn)
+            epoch_loss = self._train_epoch(
+                self.model_, train_loader, optimizer, loss_fn
+            )
 
             # eval
             self.model_.eval()
@@ -120,8 +133,9 @@ class MLPRegressor(RegressorMixin, BaseEstimator):
                 scheduler.step(val_loss)
             elif scheduler is not None:
                 scheduler.step()
-            epoch_loop.set_postfix(loss=epoch_loss, val_loss=val_loss, lr=lr_history[-1])
-
+            epoch_loop.set_postfix(
+                loss=epoch_loss, val_loss=val_loss, lr=lr_history[-1]
+            )
 
         self.best_epoch_ = int(np.argmin(val_history)) + 1
         self.val_history_ = val_history
@@ -132,11 +146,11 @@ class MLPRegressor(RegressorMixin, BaseEstimator):
             full_loader = self._make_loader(dataset)
             self.model_ = MLP(X.shape[1], 1, self.hidden_sizes, self.dropout)
             optimizer = make_optimizer(self.model_.parameters())
-            for lr in tqdm(lr_history[:self.best_epoch_], desc='refit', leave=False):
+            for lr in tqdm(lr_history[: self.best_epoch_], desc="refit", leave=False):
                 for group in optimizer.param_groups:
-                    group['lr'] = lr
+                    group["lr"] = lr
                 self._train_epoch(self.model_, full_loader, optimizer, loss_fn)
-                
+
         return self
 
     def predict(self, X):

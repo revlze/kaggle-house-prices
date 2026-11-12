@@ -54,7 +54,6 @@ class Dataset:
         X_test, _, _ = make_features(test_dataset, self.feature_set, self.drop)
         return test_dataset.select("Id"), X_test
 
-    
 
 def load_data(path):
     """Keep NA as an absence category where specified by the data dictionary."""
@@ -76,8 +75,8 @@ def remove_outliers(df):
 
 
 def save_submission(submission: pl.DataFrame, name: str):
-    path = resolve_path('submissions')
+    path = resolve_path("submissions")
     path.mkdir(exist_ok=True)
-    path_csv = path / f'submission_{name}.csv'
+    path_csv = path / f"submission_{name}.csv"
     submission.write_csv(file=path_csv)
     return path_csv

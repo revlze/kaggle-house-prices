@@ -22,7 +22,9 @@ class StratifiedRegressionKFold:
         # inner quantile edges only: outer ones would put the max value in its own bin
         edges = np.quantile(y, np.linspace(0, 1, n_bins + 1)[1:-1])
         bins = np.digitize(y, edges)
-        splitter = StratifiedKFold(self.n_splits, shuffle=self.shuffle, random_state=self.random_state)
+        splitter = StratifiedKFold(
+            self.n_splits, shuffle=self.shuffle, random_state=self.random_state
+        )
         return splitter.split(X, bins)
 
     def get_n_splits(self, X=None, y=None, groups=None):

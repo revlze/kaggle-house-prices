@@ -8,6 +8,7 @@ from joblib import dump, load
 import polars as pl
 import numpy as np
 
+
 class Training:
     def __init__(self, model, cv, dataset, seed):
         self.model = model
@@ -16,17 +17,13 @@ class Training:
         self.seed = seed
         self.fitted_model = None
 
-
     def fit_single_sklearn_model(self, refit=False):
         set_seed(self.seed)
         model = clone(self.model)
 
-        results = {
-            'cv_loss': [],
-            'avg_loss': None
-        }
+        results = {"cv_loss": [], "avg_loss": None}
         X, y = self.dataset.X, self.dataset.y
-        split_loop = tqdm(self.cv.split(X, y), total=self.cv.get_n_splits(), desc='CV')
+        split_loop = tqdm(self.cv.split(X, y), total=self.cv.get_n_splits(), desc="CV")
         cv_loss = 0
         for i, (train_idx, val_idx) in enumerate(split_loop, start=1):
             fold_model = clone(model)
@@ -36,16 +33,22 @@ class Training:
             fold_pred = fold_model.predict(X_val_fold)
             fold_rmse = root_mean_squared_error(y_val_fold, fold_pred)
             cv_loss += fold_rmse
-            results['cv_loss'].append(fold_rmse)
+            results["cv_loss"].append(fold_rmse)
         cv_loss /= self.cv.get_n_splits()
-        results['avg_loss'] = cv_loss
+        results["avg_loss"] = cv_loss
         if refit:
             self.fitted_model = model.fit(X, y)
         return results
 
-    def get_predicts(self, test_path, model_path=None,):
+    def get_predicts(
+        self,
+        test_path,
+        model_path=None,
+    ):
         if self.fitted_model is None and model_path is None:
-            raise NotFittedError("No trained model: call fit_single_sklearn_model(refit=True) first or pass model_path")
+            raise NotFittedError(
+                "No trained model: call fit_single_sklearn_model(refit=True) first or pass model_path"
+            )
         if model_path is not None:
             model_path = resolve_path(model_path)
             model = load(model_path)
@@ -60,9 +63,11 @@ class Training:
 
     def save_model(self, path=None):
         if self.fitted_model is None:
-            raise NotFittedError("No trained model: call fit_single_sklearn_model() first")
-        
-        path = resolve_path('artefacts/models') if path is None else resolve_path(path)
+            raise NotFittedError(
+                "No trained model: call fit_single_sklearn_model() first"
+            )
+
+        path = resolve_path("artefacts/models") if path is None else resolve_path(path)
         path.mkdir(parents=True, exist_ok=True)
         dump(self.fitted_model, path)
         return path
