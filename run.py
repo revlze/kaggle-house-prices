@@ -1,5 +1,4 @@
 import logging
-
 from pathlib import Path
 
 import hydra
@@ -37,13 +36,17 @@ def main(cfg):
     model = make_model(dataset, instantiate(cfg.model.regressor), scale=cfg.model.scale)
     training = Training(model, instantiate(cfg.cv), dataset, cfg.seed)
 
-    results = training.fit_single_sklearn_model(refit=cfg.submit)
+    refit = cfg.submit and cfg.predict_with == "refit"
+    results = training.fit_single_sklearn_model(refit=refit)
     log.info(f"{cfg.model.name} | {cfg.feature_set} | CV {results['avg_loss']:.5f}")
     log.info(f"folds: {[round(loss, 5) for loss in results['cv_loss']]}")
 
     if cfg.submit:
         name = f"{cfg.model.name}_{cfg.feature_set}_{cfg.name_exp}"
-        path_csv = save_submission(training.get_predicts(cfg.test_path), name)
+        if cfg.predict_with != "refit":
+            name += f"_{cfg.predict_with}"
+        submission = training.get_predicts(cfg.test_path, predict_with=cfg.predict_with)
+        path_csv = save_submission(submission, name)
         log.info(f"submission saved: {path_csv}")
 
     return results['avg_loss']

@@ -9,6 +9,7 @@ feature_set: pruned_ordinal
 train_path: data/train.csv
 test_path: data/test.csv
 submit: true
+predict_with: refit  # refit (all rows) | folds (mean of CV fold models) | first_fold
 
 hydra:
   job:
