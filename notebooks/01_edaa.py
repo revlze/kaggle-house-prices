@@ -6,21 +6,19 @@ app = marimo.App()
 
 @app.cell
 def _():
-    import numpy as np
     import marimo as mo
-    import seaborn as sns
     import matplotlib.pyplot as plt
     import polars as pl
+    import seaborn as sns
     from skimpy import skim
     import sweetviz as sv
     from data_profiling import ProfileReport
-    import pygwalker as pyg
 
     from pathlib import Path
 
     from src.data import load_data
 
-    return Path, ProfileReport, load_data, mo, pl, plt, skim, sv
+    return Path, ProfileReport, load_data, mo, pl, plt, skim, sns, sv
 
 
 @app.cell
@@ -44,6 +42,14 @@ def _(base_path, load_data):
 @app.cell
 def _(train_dataset):
     train_dataset['SalePrice']
+    return
+
+
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(r"""
+    еще короч важно переводить sales prices в log1p, типо, например, потому что метрика в катбусте только rmse, а нам надо уменьшать rmsle
+    """)
     return
 
 
@@ -128,30 +134,21 @@ def _(mo):
     return
 
 
+@app.cell
+def _(plt, sns, train_pd):
+    _top = train_pd.select_dtypes("number").corr()["SalePrice"].abs().sort_values(ascending=False).index[:11]
+    _fig, _ax = plt.subplots(figsize=(9, 7))
+    sns.heatmap(train_pd[_top].corr(), annot=True, fmt=".2f", cmap="vlag", center=0, ax=_ax)
+    _ax.set_title("Корреляции: SalePrice и топ-10 признаков")
+    _fig.tight_layout()
+    _fig
+    return
+
+
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
-    чат жпт:
-
-
-    | Признак | Моя оценка | Что делать |
-    |---|---|---|
-    | `Alley` | 94% NaN означают отсутствие доступа к переулку, а не неизвестное значение | Оставить, заполнить `NoAlley` |
-    | `Street` | Всего 6 домов с гравийной дорогой | Кандидат на удаление |
-    | `Utilities` | Только 1 дом отличается от остальных | Проверить удаление через CV |
-    | `LandSlope` | 95% `Gtl`, но остальные 78 домов имеют иной уклон. Связь с `LotArea` — 0.55 | Оставить |
-    | `Condition2` | Только 15 домов имеют значение, отличное от `Norm` | Кандидат на удаление |
-    | `RoofMatl` | 98% `CompShg`, связь с ценой 0.18 | Оставить для проверки, возможно объединить редкие категории |
-    | `BsmtFinSF2` | 89% нулей, остальные значения — площадь второй отделанной части подвала | Оставить числовым |
-    | `BsmtHalfBath` | 94% нулей, количество дополнительных полуванных в подвале | Оставить, проверить объединение с другими ванными |
-    | `FireplaceQu` | 47% NaN соответствуют домам без камина | Оставить, заполнить `NoFireplace` |
-    | `EnclosedPorch`, `3SsnPorch`, `ScreenPorch` | Разные типы веранд, с большой долей нулей | Оставить, добавить агрегированные признаки |
-    | `PoolArea` | Бассейн есть только у 7 домов | Проверить бинарный `HasPool` вместо площади |
-    | `PoolQC` | Пропуски означают отсутствие бассейна | Заполнить `NoPool`, проверить полезность |
-    | `Fence` | 81% NaN означают отсутствие забора | Оставить, заполнить `NoFence` |
-    | `MiscFeature` | 96% NaN означают отсутствие дополнительных объектов | Кандидат на удаление |
-    | `MiscVal` | 96.4% нулей, слабая линейная связь с ценой −0.02 | Кандидат на удаление, проверить вместе с `MiscFeature` |
-    | `YrSold` | Средние цены по годам близки, но это не исключает временного эффекта | Пока оставить |
+    еще короче нашел, что GrLivArea есть выбросы в данных, которые чуть мешают модели, там короче есть нетипичные сделки. короче можно наверно рубтть от 4000 потому что там есть какие-то : 5642	160000, 4676	184750, 3395	200000, в тоже время 4476	745000, 4316	755000, 3608	475000, короче страненько, эт ес че было "GrLivArea", "SalePrice"
     """)
     return
 
