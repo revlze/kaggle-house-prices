@@ -1,0 +1,9 @@
+name: tree
+scale: false
+regressor:
+  _target_: sklearn.tree.DecisionTreeRegressor
+  max_depth: 12
+  min_samples_leaf: 11
+  min_samples_split: 25
+  max_features: 0.997419575252293
+  random_state: ${seed}

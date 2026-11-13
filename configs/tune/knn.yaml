@@ -1,0 +1,7 @@
+# uv run python run.py model=knn +tune=knn
+# params: paths relative to model.regressor
+n_trials: 40
+params:
+  n_neighbors: {type: int, low: 2, high: 40}
+  weights: {type: categorical, choices: [uniform, distance]}
+  p: {type: int, low: 1, high: 2}

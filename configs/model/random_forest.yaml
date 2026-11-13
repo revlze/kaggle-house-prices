@@ -1,0 +1,10 @@
+name: random_forest
+scale: false
+regressor:
+  _target_: sklearn.ensemble.RandomForestRegressor
+  n_estimators: 800
+  max_depth: 26
+  max_features: 0.29636783978709463
+  min_samples_leaf: 1
+  random_state: ${seed}
+  n_jobs: -1

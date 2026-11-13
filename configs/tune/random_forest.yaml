@@ -1,0 +1,8 @@
+# uv run python run.py model=random_forest +tune=random_forest
+# params: paths relative to model.regressor
+n_trials: 25
+params:
+  n_estimators: {type: int, low: 200, high: 800, step: 100}
+  max_depth: {type: int, low: 8, high: 40}
+  max_features: {type: float, low: 0.1, high: 0.7}
+  min_samples_leaf: {type: int, low: 1, high: 8}

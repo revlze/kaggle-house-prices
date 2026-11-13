@@ -1,0 +1,7 @@
+name: knn
+scale: true
+regressor:
+  _target_: sklearn.neighbors.KNeighborsRegressor
+  n_neighbors: 9
+  weights: distance
+  p: 1
