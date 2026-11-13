@@ -3,7 +3,7 @@ scale: false
 regressor:
   _target_: xgboost.XGBRegressor
   n_estimators: 1000
-  learning_rate: 0.003
+  learning_rate: 0.05
   max_depth: 4
   subsample: 0.8
   colsample_bytree: 0.5

@@ -7,10 +7,8 @@
 - [ ] возрасты `HouseAge`, `RemodAge`, `IsRemodeled` — низкий приоритет для бустинга, пригодится для линейной
 - [ ] нативные `cat_features` в CatBoost вместо one-hot для неупорядоченных категорий
 - [x] выбросы: `remove_outliers` в `src/data.py` удаляет из train 2 дома с `GrLivArea > 4000` и `SalePrice < 300k` (1458 строк). Дома >4000 за 745k и 755k оставлены. Test не трогается. Фолд с 0.17–0.19 исчез у всех моделей, ridge 0.1406 → 0.1127, catboost 0.1179 → 0.1113. CV до/после не сравнимы (другие данные), CV стал чуть оптимистичнее LB
-- [ ] Lasso / ElasticNet рядом с Ridge
 - [ ] бленд CatBoost + Ridge/Lasso — нужны out-of-fold предсказания
 - [ ] каждый шаг — отдельный вариант в `variants`, сравнивать пофолдовые лоссы с предыдущим шагом
-- [ ] лишний `model.fit(X, y)` в `fit_single_sklearn_model`
 
 
 ### Notes
