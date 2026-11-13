@@ -1,10 +1,8 @@
 import polars as pl
-from pathlib import Path
 from sklearn.model_selection import train_test_split
 
-from .utils import resolve_path
 from .features import make_features
-
+from .utils import resolve_path
 
 NA_ABSENCE_COLUMNS = (
     "Alley",
@@ -25,6 +23,8 @@ NA_ABSENCE_COLUMNS = (
 
 
 class Dataset:
+    """Train features and log1p target for one feature set, plus an 80/20 holdout split."""
+
     def __init__(self, train_path, feature_set, seed, train_size=0.8, drop=()):
         self.train_path = resolve_path(train_path)
 
@@ -37,8 +37,8 @@ class Dataset:
             self.train_dataset, self.feature_set, self.drop
         )
 
-        # TODO: y хранится в log1p шкале,
-        # нужно для сабмита добавить экспоненту для перевода обратно в доллары
+        # Target is log1p(price), so RMSE on it is the competition metric;
+        # predictions are mapped back with expm1 in Training.get_predicts.
         self.y = self.train_dataset["SalePrice"].log1p()
 
         self.X_train, self.X_holdout, self.y_train, self.y_holdout = train_test_split(
@@ -49,6 +49,7 @@ class Dataset:
         )
 
     def load_test(self, test_path):
+        """Return test Ids and test features built with the same feature set and drops."""
         test_path = resolve_path(test_path)
         test_dataset = load_data(test_path)
         X_test, _, _ = make_features(test_dataset, self.feature_set, self.drop)
@@ -75,6 +76,7 @@ def remove_outliers(df):
 
 
 def save_submission(submission: pl.DataFrame, name: str):
+    """Write the submission to submissions/submission_<name>.csv and return the path."""
     path = resolve_path("submissions")
     path.mkdir(exist_ok=True)
     path_csv = path / f"submission_{name}.csv"

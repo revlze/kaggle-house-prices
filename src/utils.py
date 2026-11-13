@@ -1,11 +1,9 @@
 import os
 import random
+from pathlib import Path
 
 import numpy as np
 import torch
-import polars as pl
-
-from pathlib import Path
 
 
 def set_seed(seed=42):
@@ -30,6 +28,7 @@ def set_seed(seed=42):
 
 
 def resolve_path(path):
+    """Resolve a relative path against the repository root; absolute paths pass through."""
     path = Path(path)
     base_path = Path(__file__).resolve().parents[1]
     return path if path.is_absolute() else base_path / path

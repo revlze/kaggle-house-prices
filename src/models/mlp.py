@@ -1,16 +1,19 @@
 from functools import partial
 
-import torch.nn as nn
-import torch
-from ..utils import set_seed
-from sklearn.base import BaseEstimator, RegressorMixin
 import numpy as np
-from torch.utils.data import DataLoader, TensorDataset, random_split
+import torch
 from scipy import sparse
+from sklearn.base import BaseEstimator, RegressorMixin
+from torch import nn
+from torch.utils.data import DataLoader, TensorDataset, random_split
 from tqdm import tqdm
+
+from ..utils import set_seed
 
 
 class MLP(nn.Module):
+    """Fully connected net: [Linear -> BatchNorm -> LeakyReLU -> Dropout] per hidden size, then Linear."""
+
     def __init__(self, inp, out, hidden_sizes=(512, 256), dropout=0.0):
         super().__init__()
         layers = []
@@ -92,6 +95,7 @@ class MLPRegressor(RegressorMixin, BaseEstimator):
         return epoch_loss / len(loader)
 
     def fit(self, X, y):
+        """Train on X, y (dense or sparse); see the class docstring for the two stages."""
         set_seed(self.seed)
         X = self._to_tensor(X)
         y = torch.as_tensor(np.asarray(y, dtype=np.float32)).unsqueeze(1)
@@ -154,6 +158,7 @@ class MLPRegressor(RegressorMixin, BaseEstimator):
         return self
 
     def predict(self, X):
+        """Predict with the trained network."""
         X = self._to_tensor(X)
         self.model_.eval()
         with torch.no_grad():
