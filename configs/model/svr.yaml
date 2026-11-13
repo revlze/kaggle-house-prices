@@ -1,0 +1,8 @@
+name: svr
+scale: true
+regressor:
+  _target_: sklearn.svm.SVR
+  kernel: rbf
+  C: 50.0
+  epsilon: 0.05
+  gamma: 0.0003

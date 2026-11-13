@@ -1,0 +1,7 @@
+# uv run python run.py model=svr +tune=svr
+# params: paths relative to model.regressor
+n_trials: 50
+params:
+  C: {type: float, low: 0.1, high: 100, log: true}
+  epsilon: {type: float, low: 0.001, high: 0.1, log: true}
+  gamma: {type: float, low: 0.00001, high: 0.01, log: true}
