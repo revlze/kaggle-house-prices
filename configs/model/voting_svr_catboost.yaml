@@ -1,0 +1,16 @@
+# Blending: plain average of SVR and CatBoost predictions (log scale).
+# Base models come from svr.yaml / catboost.yaml via defaults, so tuned params apply here too.
+# Override a base model from CLI, e.g. model._svr.regressor.C=30.
+# scale: true is needed for SVR; it does not change CatBoost splits.
+defaults:
+  - /model@_svr: svr
+  - /model@_catboost: catboost
+
+name: voting_svr_catboost
+scale: true
+regressor:
+  _target_: src.models.ensembles.voting
+  _convert_: all
+  estimators:
+    svr: ${model._svr.regressor}
+    catboost: ${model._catboost.regressor}
