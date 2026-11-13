@@ -2,13 +2,11 @@
 - [x] EDA: skimpy — first pass; fg-data-profiling — second pass; sweetviz — third pass; use my hands — fourth pass
 - [x] log1p для SalePrice — дало буст на CV на всех моделях
 - [x] порядковые в numeric — варианты `pruned_ordinal` / `pruned_ordinal_no_cond`. CatBoost: −0.00057 (4/5 фолдов), в пределах шума; без `*Cond` эффекта нет. Linear: не определить, шум модели больше эффекта. Оставляю `pruned_ordinal` базой ради простоты
-- [ ] `TotalSF = TotalBsmtSF + GrLivArea` — приоритет
+- [ ] `TotalSF = TotalBsmtSF + GrLivArea`
 - [ ] `TotalBath` (Full + 0.5·Half, включая подвал) и `TotalPorchSF` — одним вариантом, ожидаемо около шума
 - [ ] возрасты `HouseAge`, `RemodAge`, `IsRemodeled` — низкий приоритет для бустинга, пригодится для линейной
-- [ ] нативные `cat_features` в CatBoost вместо one-hot для неупорядоченных категорий
 - [x] выбросы: `remove_outliers` в `src/data.py` удаляет из train 2 дома с `GrLivArea > 4000` и `SalePrice < 300k` (1458 строк). Дома >4000 за 745k и 755k оставлены. Test не трогается. Фолд с 0.17–0.19 исчез у всех моделей, ridge 0.1406 → 0.1127, catboost 0.1179 → 0.1113. CV до/после не сравнимы (другие данные), CV стал чуть оптимистичнее LB
-- [ ] бленд CatBoost + Ridge/Lasso — нужны out-of-fold предсказания
-- [ ] каждый шаг — отдельный вариант в `variants`, сравнивать пофолдовые лоссы с предыдущим шагом
+- [x] бленд CatBoost + Ridge/Lasso — нужны out-of-fold предсказания
 
 
 ### Notes
