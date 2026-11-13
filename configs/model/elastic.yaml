@@ -1,0 +1,6 @@
+name: elasticnet
+scale: true
+regressor:
+  _target_: sklearn.linear_model.ElasticNet
+  alpha: 0.10623988781433366
+  l1_ratio: 0.010547941503230332
