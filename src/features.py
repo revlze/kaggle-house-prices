@@ -152,6 +152,11 @@ variants = {
     "base": {"extra": [], "drop": [], "ordinal": ()},
     "pruned": {"extra": [], "drop": LOW_INFO, "ordinal": ()},
     "pruned_ordinal": {"extra": [], "drop": LOW_INFO, "ordinal": ORDINAL_ALL},
+    "pruned_ordinal_no_cond": {
+        "extra": [],
+        "drop": LOW_INFO,
+        "ordinal": ORDINAL_NO_COND,
+    },
     "pruned_ordinal_agg": {"extra": tuple(AGGREGATES), "drop": LOW_INFO, "ordinal": ORDINAL_ALL},
     "pruned_ordinal_no_cond_agg": {
         "extra": tuple(AGGREGATES),
