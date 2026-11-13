@@ -3,6 +3,6 @@ scale: true
 regressor:
   _target_: sklearn.svm.SVR
   kernel: rbf
-  C: 50.0
-  epsilon: 0.05
-  gamma: 0.0003
+  C: 54.41397514802602
+  epsilon: 0.04558078518849846
+  gamma: 0.0002671699286126993

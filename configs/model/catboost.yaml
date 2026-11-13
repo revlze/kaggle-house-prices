@@ -2,5 +2,12 @@ name: catboost
 scale: false
 regressor:
   _target_: catboost.CatBoostRegressor
+  iterations: 1800
+  depth: 5
+  learning_rate: 0.02599689179402531
+  l2_leaf_reg: 5.646993321863348
+  random_strength: 1.2235036199039757
+  bagging_temperature: 0.5080236678274495
+  rsm: 0.2501625416451652
   silent: true
   random_seed: ${seed}

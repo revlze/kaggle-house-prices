@@ -2,10 +2,13 @@ name: xgboost
 scale: false
 regressor:
   _target_: xgboost.XGBRegressor
-  n_estimators: 1000
-  learning_rate: 0.05
-  max_depth: 4
-  subsample: 0.8
-  colsample_bytree: 0.5
+  n_estimators: 700
+  learning_rate: 0.03466960326435548
+  max_depth: 3
+  min_child_weight: 1.4721493356036943
+  subsample: 0.7678325299879043
+  colsample_bytree: 0.22127455681087463
+  reg_lambda: 0.05543749674839047
+  reg_alpha: 0.010566552502555799
   random_state: ${seed}
   n_jobs: -1
