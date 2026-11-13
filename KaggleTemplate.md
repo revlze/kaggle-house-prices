@@ -2,9 +2,7 @@
 - [x] EDA: skimpy — first pass; fg-data-profiling — second pass; sweetviz — third pass; use my hands — fourth pass
 - [x] log1p для SalePrice — дало буст на CV на всех моделях
 - [x] порядковые в numeric — варианты `pruned_ordinal` / `pruned_ordinal_no_cond`. CatBoost: −0.00057 (4/5 фолдов), в пределах шума; без `*Cond` эффекта нет. Linear: не определить, шум модели больше эффекта. Оставляю `pruned_ordinal` базой ради простоты
-- [ ] `TotalSF = TotalBsmtSF + GrLivArea`
-- [ ] `TotalBath` (Full + 0.5·Half, включая подвал) и `TotalPorchSF` — одним вариантом, ожидаемо около шума
-- [ ] возрасты `HouseAge`, `RemodAge`, `IsRemodeled` — низкий приоритет для бустинга, пригодится для линейной
+- [x] агрегаты одним вариантом `pruned_ordinal_agg`: `TotalSF`, `TotalBath`, `TotalPorchSF`, `HouseAge`, `RemodAge` (`IsRemodeled` не делал). SVR: CV 0.10931 → 0.10902, в пределах шума; на других моделях не прогонял
 - [x] выбросы: `remove_outliers` в `src/data.py` удаляет из train 2 дома с `GrLivArea > 4000` и `SalePrice < 300k` (1458 строк). Дома >4000 за 745k и 755k оставлены. Test не трогается. Фолд с 0.17–0.19 исчез у всех моделей, ridge 0.1406 → 0.1127, catboost 0.1179 → 0.1113. CV до/после не сравнимы (другие данные), CV стал чуть оптимистичнее LB
 - [x] бленд CatBoost + Ridge/Lasso — нужны out-of-fold предсказания
 
@@ -45,26 +43,36 @@
 | ridge (alpha=10, scaled), pruned_ordinal, без выбросов, KFold(5) | 0.11265 | 0.01097 |  | 2026-11-11 |
 | catboost (default), pruned_ordinal, без выбросов, KFold(5) | 0.11131 | 0.00914 |  | 2026-11-11 |
 | mlp (128-64, AdamW, cosine, 100 ep + refit), pruned_ordinal, без выбросов, KFold(5) | 0.12131 | 0.01083 |  | 2026-11-11 |
+| catboost (default), pruned_ordinal, StratifiedKFold(5) | 0.11312 | 0.00549 | 0.12793 | 2026-11-11 |
+| catboost (optuna 30 trials), pruned_ordinal, StratifiedKFold(5) | 0.11305 | 0.00419 | 0.12794 | 2026-11-12 |
+| catboost (optuna 20 trials, расширенное пространство), pruned_ordinal, StratifiedKFold(5) | 0.11232 | 0.00327 | 0.12547 | 2026-11-12 |
+| svr (tuned), pruned_ordinal, StratifiedKFold(5) | 0.10975 | 0.00298 | 0.12625 | 2026-11-12 |
+| svr (optuna 50 trials), pruned_ordinal, StratifiedKFold(5) | 0.10931 | 0.00292 |  | 2026-11-13 |
+| ridge (optuna 50 trials, alpha≈17.5), pruned_ordinal, StratifiedKFold(5) | 0.11318 | 0.00490 |  | 2026-11-13 |
+| elasticnet (optuna 50 trials), pruned_ordinal, StratifiedKFold(5) | 0.11823 | 0.00452 |  | 2026-11-13 |
+| xgboost (optuna 40 trials), pruned_ordinal, StratifiedKFold(5) | 0.11362 | 0.00546 |  | 2026-11-13 |
+| catboost (optuna 40 trials), pruned_ordinal, StratifiedKFold(5) | 0.11142 | 0.00262 |  | 2026-11-13 |
+| stack svr + catboost, pruned_ordinal, StratifiedKFold(5) | 0.10678 | 0.00354 | 0.12422 | 2026-11-13 |
+| svr (параметры из конфига), pruned_ordinal_agg, StratifiedKFold(5) | 0.10902 | 0.00299 | 0.12546 | 2026-11-13 |
+| svr (перетюн 50 trials), pruned_ordinal_agg, StratifiedKFold(5) | 0.10901 | 0.00323 | 0.12765 | 2026-11-13 |
 
-### Annotations
 
-| №   | Annotation |
-| --- | ---------- |
-|     |            |
 
 ### Final Ensemble
 
 | Model | CV  | Public LB | Private LB |
 | ----- | --- | --------- | ---------- |
-|       |     |           |            |
+| stack svr + catboost, pruned_ordinal | 0.10678 | 0.12422 |            |
 
 ### Processed ideas
 #### Good
 - log1p для SalePrice — буст на CV на всех моделях
 - удаление 2 выбросов (`GrLivArea > 4000`, `SalePrice < 300k`) — убрало фолд-выброс у всех моделей, сильнее всего помогло linear/ridge/mlp
+- стек svr + catboost — лучший и по CV (0.10678), и по LB (0.12422)
 #### Neutral
-- pass
+- агрегаты (`TotalSF`, `TotalBath`, `TotalPorchSF`, `HouseAge`, `RemodAge`) — SVR CV −0.0003, LB в шуме; ожидаемо, это линейные комбинации существующих колонок
 #### Bad
 - pass
 #### Some experimental ideas I didn't implemented
-- pass
+- нативные `cat_features` в CatBoost вместо one-hot
+- `IsRemodeled` — флаг искажён: у 166 домов до 1950 года `YearRemodAdd` обрезан до 1950
