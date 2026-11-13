@@ -14,20 +14,16 @@ def _():
     import sweetviz as sv
     from data_profiling import ProfileReport
 
-    from pathlib import Path
-
     from src.data import load_data
+    from src.utils import resolve_path
 
-    return Path, ProfileReport, load_data, mo, pl, plt, skim, sns, sv
+    return ProfileReport, load_data, mo, pl, plt, resolve_path, skim, sns, sv
 
 
 @app.cell
-def _(Path):
-
-    base_path = Path("/Users/platon/Documents/kaggle-house")
-
-    curr_path = Path(__file__).parent
-    html_path = curr_path/'htmls'
+def _(resolve_path):
+    base_path = resolve_path(".")
+    html_path = resolve_path("notebooks/htmls")
     html_path.mkdir(exist_ok=True)
     return base_path, html_path
 
